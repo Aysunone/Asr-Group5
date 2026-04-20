@@ -1,0 +1,2908 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASR Group | Development Consulting</title>
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --navy: #0f1f3d;
+            --navy2: #162b52;
+            --gold: #b8962e;
+            --gold2: #d4af5a;
+            --gold3: #f0d080;
+            --cream: #faf8f3;
+            --cream2: #f2eed8;
+            --white: #ffffff;
+            --gray: #6b7280;
+            --dark: #0a0f1e;
+            --text: #1a1a2e;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            overflow-x: hidden;
+            cursor: none
+        }
+
+        .cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transition: transform 0.1s;
+            mix-blend-mode: difference
+        }
+
+        .cursor-ring {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transition: all 0.18s ease;
+            mix-blend-mode: difference
+        }
+
+        #navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 80px;
+        }
+
+        #navbar.scrolled {
+            background: rgba(10, 15, 30, 0.96);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(184, 150, 46, 0.2);
+            height: 68px;
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 48px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo-zone {
+            background-image: url(image.png);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+
+        .nav-logo-placeholder {
+            width: 48px;
+            height: 48px;
+            border: 1.5px dashed rgba(184, 150, 46, 0.4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(184, 150, 46, 0.05);
+            flex-shrink: 0;
+            transition: border-color 0.3s;
+        }
+
+        .nav-logo-placeholder span {
+            font-size: 9px;
+            color: rgba(184, 150, 46, 0.5);
+            text-align: center;
+            line-height: 1.3;
+            font-family: Arial;
+        }
+
+        .nav-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .nav-brand-top {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--white);
+            text-transform: uppercase;
+        }
+
+        .nav-brand-bottom {
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 3.5px;
+            color: var(--gold2);
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-links>li {
+            position: relative
+        }
+
+        .nav-links>li>a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            font-size: 12.5px;
+            font-weight: 400;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            border-radius: 6px;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+
+        .nav-links>li>a:hover,
+        .nav-links>li.active>a {
+            color: var(--gold2)
+        }
+
+        .nav-links>li>a .arr {
+            font-size: 8px;
+            opacity: 0.5;
+            transition: transform 0.2s;
+        }
+
+        .nav-links>li:hover>a .arr {
+            transform: rotate(180deg);
+            opacity: 1
+        }
+
+        .nav-drop {
+            display: none;
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 15, 30, 0.98);
+            border: 1px solid rgba(184, 150, 46, 0.15);
+            border-radius: 14px;
+            padding: 14px;
+            min-width: 220px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-links>li:hover .nav-drop {
+            display: block;
+            animation: dropIn 0.18s ease
+        }
+
+        @keyframes dropIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0)
+            }
+        }
+
+        .nav-drop a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 12.5px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-drop a:hover {
+            background: rgba(184, 150, 46, 0.08);
+            color: var(--gold2)
+        }
+
+        .nav-drop a .di {
+            font-size: 16px;
+            width: 24px;
+            text-align: center
+        }
+
+        .nav-mega {
+            display: none;
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 15, 30, 0.98);
+            border: 1px solid rgba(184, 150, 46, 0.15);
+            border-radius: 16px;
+            padding: 28px;
+            width: 640px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .nav-links>li:hover .nav-mega {
+            display: grid;
+            animation: dropIn 0.18s ease
+        }
+
+        .mega-group h5 {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(184, 150, 46, 0.15);
+        }
+
+        .mega-group a {
+            display: block;
+            color: rgba(255, 255, 255, 0.55);
+            text-decoration: none;
+            font-size: 12.5px;
+            padding: 7px 0;
+            transition: color 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .mega-group a:last-child {
+            border: none
+        }
+
+        .mega-group a:hover {
+            color: var(--gold2)
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--navy);
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 11px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(184, 150, 46, 0.3);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(184, 150, 46, 0.45)
+        }
+
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: 1px solid rgba(184, 150, 46, 0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            z-index: 9100;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .hamburger:hover {
+            border-color: var(--gold);
+            background: rgba(184, 150, 46, 0.08)
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: all 0.3s;
+            transform-origin: center;
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(6.5px) rotate(45deg)
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0)
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-6.5px) rotate(-45deg)
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8900;
+            background: rgba(10, 15, 30, 0.98);
+            backdrop-filter: blur(24px);
+            flex-direction: column;
+            padding: 100px 32px 40px;
+            overflow-y: auto;
+        }
+
+        .mobile-overlay.open {
+            display: flex
+        }
+
+        .mob-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 28px;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            letter-spacing: 1px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            transition: color 0.2s;
+        }
+
+        .mob-link:hover {
+            color: var(--gold2)
+        }
+
+        .mob-link .num {
+            font-size: 12px;
+            color: var(--gold);
+            font-family: Arial;
+            letter-spacing: 2px
+        }
+
+        .mob-sub {
+            padding: 8px 0 16px 0;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mob-sub.open {
+            display: flex
+        }
+
+        .mob-sub a {
+            color: rgba(255, 255, 255, 0.45);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .mob-sub a:hover {
+            background: rgba(184, 150, 46, 0.08);
+            color: var(--gold2)
+        }
+
+        .mob-cta {
+            margin-top: 32px;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--navy);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+
+
+        .hero {
+            min-height: 100vh;
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            animation: grain 0.5s steps(1) infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes grain {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            10% {
+                transform: translate(-2%, -3%)
+            }
+
+            30% {
+                transform: translate(3%, -1%)
+            }
+
+            50% {
+                transform: translate(-1%, 3%)
+            }
+
+            70% {
+                transform: translate(2%, 1%)
+            }
+
+            90% {
+                transform: translate(-3%, 2%)
+            }
+        }
+
+        .hero-shape1 {
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-60%);
+            width: 650px;
+            height: 650px;
+            border: 1px solid rgba(184, 150, 46, 0.1);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .hero-shape2 {
+            position: absolute;
+            right: 80px;
+            top: 50%;
+            transform: translateY(-55%);
+            width: 450px;
+            height: 450px;
+            border: 1px solid rgba(184, 150, 46, 0.07);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .hero-shape3 {
+            position: absolute;
+            right: 200px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(184, 150, 46, 0.06), transparent 70%);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+
+        .hero-triangles {
+            position: absolute;
+            right: 60px;
+            top: 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            z-index: 2;
+            opacity: 0.4;
+        }
+
+        .ht {
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+        }
+
+        .ht.navy {
+            border-bottom: 20px solid var(--navy2)
+        }
+
+        .ht.gold {
+            border-bottom: 20px solid var(--gold)
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 48px;
+            padding-top: 100px;
+            padding-bottom: 80px;
+            width: 100%;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+
+        .hero-line {
+            width: 40px;
+            height: 1px;
+            background: var(--gold)
+        }
+
+        .hero-eyebrow span {
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: var(--gold2);
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(56px, 7vw, 96px);
+            font-weight: 300;
+            line-height: 1.02;
+            color: var(--white);
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--gold), var(--gold3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero h1 strong {
+            font-weight: 700;
+            color: var(--white)
+        }
+
+        .hero-sub {
+            font-size: clamp(36px, 4.5vw, 62px);
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: -0.5px;
+            margin-bottom: 44px;
+            line-height: 1.05;
+        }
+
+        .hero-desc {
+            max-width: 560px;
+            font-size: 15.5px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 52px;
+            font-weight: 300;
+            letter-spacing: 0.2px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap
+        }
+
+        .btn-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--navy);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 16px 36px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(184, 150, 46, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 50px rgba(184, 150, 46, 0.4)
+        }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 16px 36px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.3s;
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(184, 150, 46, 0.4);
+            color: var(--gold2)
+        }
+
+        .hero-stats-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 4;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(184, 150, 46, 0.12);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-stats-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 48px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .hstat {
+            padding: 26px 32px;
+            border-right: 1px solid rgba(184, 150, 46, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .hstat:last-child {
+            border-right: none
+        }
+
+        .hstat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 44px;
+            font-weight: 700;
+            color: var(--gold2);
+            line-height: 1;
+        }
+
+        .hstat-info p {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 11px;
+            letter-spacing: 0.5px
+        }
+
+        .hstat-info strong {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            font-weight: 500
+        }
+
+
+        .ticker {
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            padding: 14px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ticker-track {
+            display: flex;
+            gap: 0;
+            animation: ticker 25s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes ticker {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--navy);
+            padding: 0 32px;
+        }
+
+        .ticker-item .sep {
+            opacity: 0.4;
+            font-size: 16px
+        }
+
+
+        .section {
+            padding: 120px 48px
+        }
+
+        .section-inner {
+            max-width: 1400px;
+            margin: 0 auto
+        }
+
+        .s-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .s-tag::before {
+            content: '';
+            width: 28px;
+            height: 1px;
+            background: var(--gold)
+        }
+
+        .s-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(40px, 5vw, 68px);
+            font-weight: 300;
+            line-height: 1.08;
+            letter-spacing: -0.5px;
+        }
+
+        .s-title em {
+            font-style: italic;
+            color: var(--gold)
+        }
+
+        .s-desc {
+            font-size: 15.5px;
+            line-height: 1.85;
+            color: var(--gray);
+            font-weight: 300;
+            max-width: 540px;
+        }
+
+
+        .services-section {
+            background: var(--navy)
+        }
+
+        .services-section .s-title {
+            color: var(--white)
+        }
+
+        .services-section .s-desc {
+            color: rgba(255, 255, 255, 0.45)
+        }
+
+        .services-head {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: end;
+            margin-bottom: 70px;
+        }
+
+        .srv-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .srv-card {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 44px 40px;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.4s;
+            cursor: pointer;
+        }
+
+        .srv-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--gold3));
+            transform: scaleX(0);
+            transition: transform 0.4s;
+            transform-origin: left;
+        }
+
+        .srv-card:hover {
+            background: rgba(184, 150, 46, 0.06)
+        }
+
+        .srv-card:hover::after {
+            transform: scaleX(1)
+        }
+
+        .srv-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 13px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .srv-icon {
+            font-size: 34px;
+            margin-bottom: 18px;
+            display: block
+        }
+
+        .srv-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 14px;
+            line-height: 1.2;
+        }
+
+        .srv-card p {
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.42);
+            margin-bottom: 22px;
+        }
+
+        .srv-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        .srv-tag {
+            background: rgba(184, 150, 46, 0.1);
+            border: 1px solid rgba(184, 150, 46, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 10.5px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .srv-arrow {
+            position: absolute;
+            right: 28px;
+            top: 28px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(184, 150, 46, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .srv-card:hover .srv-arrow {
+            background: var(--gold);
+            color: var(--navy);
+            border-color: var(--gold)
+        }
+
+        .lead-section {
+            background: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lead-bg-shape {
+            position: absolute;
+            right: -200px;
+            top: -100px;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(184, 150, 46, 0.08), transparent 60%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .lead-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        .lead-left .s-title {
+            color: var(--navy)
+        }
+
+        .lead-left .s-desc {
+            color: var(--gray)
+        }
+
+        .lead-benefits {
+            margin-top: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px
+        }
+
+        .lead-benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
+            border-radius: 12px;
+            background: var(--white);
+            border: 1px solid rgba(184, 150, 46, 0.12);
+            transition: all 0.25s;
+        }
+
+        .lead-benefit:hover {
+            border-color: var(--gold);
+            transform: translateX(6px)
+        }
+
+        .lb-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(184, 150, 46, 0.1), rgba(184, 150, 46, 0.05));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .lb-text h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 3px
+        }
+
+        .lb-text p {
+            font-size: 12.5px;
+            color: var(--gray);
+            line-height: 1.5
+        }
+
+        .lead-form-wrap {
+            background: var(--navy);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lead-form-wrap::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(184, 150, 46, 0.12), transparent);
+            border-radius: 50%;
+        }
+
+        .form-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 14px;
+            font-family: 'Arial', sans-serif;
+            margin-bottom: 16px;
+            outline: none;
+            transition: border-color 0.25s;
+        }
+
+        .form-input:focus {
+            border-color: rgba(184, 150, 46, 0.5);
+            background: rgba(255, 255, 255, 0.08)
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.25)
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--navy);
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(184, 150, 46, 0.35)
+        }
+
+        .form-note {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 11px;
+            margin-top: 14px;
+            letter-spacing: 0.3px;
+        }
+
+
+        .cases-section {
+            background: var(--dark);
+        }
+
+        .cases-section .s-title {
+            color: var(--white)
+        }
+
+        .cases-section .s-desc {
+            color: rgba(255, 255, 255, 0.4)
+        }
+
+        .cases-head {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: end;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .case-card {
+            border: 1px solid rgba(184, 150, 46, 0.1);
+            border-radius: 18px;
+            padding: 36px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.35s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(184, 150, 46, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+
+        .case-card:hover {
+            border-color: rgba(184, 150, 46, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3)
+        }
+
+        .case-card:hover::before {
+            opacity: 1
+        }
+
+        .case-sector-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 18px;
+        }
+
+        .case-card h4 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 22px;
+            line-height: 1.25;
+        }
+
+        .case-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .case-step:last-of-type {
+            border: none
+        }
+
+        .step-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            min-width: 62px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 12.5px;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.6
+        }
+
+        .case-result {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(184, 150, 46, 0.1);
+            border: 1px solid rgba(184, 150, 46, 0.2);
+            color: var(--gold2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+
+
+        .about-section {
+            background: var(--cream)
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: start;
+        }
+
+        .timeline {
+            margin-top: 40px;
+            position: relative;
+            padding-left: 28px
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 1px;
+            background: linear-gradient(to bottom, var(--gold), rgba(184, 150, 46, 0.1));
+        }
+
+        .t-item {
+            margin-bottom: 36px;
+            position: relative
+        }
+
+        .t-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 4px rgba(184, 150, 46, 0.1);
+        }
+
+        .t-year {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .t-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .t-text {
+            font-size: 13.5px;
+            color: var(--gray);
+            line-height: 1.7
+        }
+
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 32px;
+        }
+
+        .cert-card {
+            background: var(--white);
+            border: 1px solid rgba(184, 150, 46, 0.12);
+            border-radius: 14px;
+            padding: 22px 16px;
+            text-align: center;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .cert-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 8px 30px rgba(184, 150, 46, 0.1);
+            transform: translateY(-4px)
+        }
+
+        .cert-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            display: block
+        }
+
+        .cert-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 3px
+        }
+
+        .cert-desc {
+            font-size: 10.5px;
+            color: var(--gray)
+        }
+
+
+        .gallery-section {
+            background: var(--navy)
+        }
+
+        .gallery-section .s-title {
+            color: var(--white)
+        }
+
+        .gtabs {
+            display: flex;
+            gap: 4px;
+            margin: 40px 0 36px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 5px;
+            display: inline-flex;
+        }
+
+        .gtab {
+            padding: 10px 22px;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .gtab.active {
+            background: rgba(184, 150, 46, 0.15);
+            color: var(--gold2)
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .gitem {
+            aspect-ratio: 16/11;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(184, 150, 46, 0.1);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gitem::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(184, 150, 46, 0.08), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gitem:hover {
+            border-color: rgba(184, 150, 46, 0.35);
+            transform: scale(1.02)
+        }
+
+        .gitem:hover::after {
+            opacity: 1
+        }
+
+        .gi-icon {
+            font-size: 32px;
+            z-index: 1
+        }
+
+        .gi-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+            text-align: center;
+            padding: 0 12px
+        }
+
+        .resources-section {
+            background: var(--cream)
+        }
+
+        .res-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            margin-top: 60px;
+        }
+
+        .dl-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px
+        }
+
+        .dl-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            background: var(--white);
+            border: 1px solid rgba(184, 150, 46, 0.1);
+            border-radius: 14px;
+            padding: 22px;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .dl-card:hover {
+            border-color: var(--gold);
+            transform: translateX(6px);
+            box-shadow: 0 8px 30px rgba(184, 150, 46, 0.08)
+        }
+
+        .dl-ico {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(184, 150, 46, 0.1), rgba(184, 150, 46, 0.05));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .dl-info h4 {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px
+        }
+
+        .dl-info p {
+            font-size: 12.5px;
+            color: var(--gray);
+            line-height: 1.5
+        }
+
+        .dl-badge {
+            display: inline-block;
+            background: rgba(184, 150, 46, 0.1);
+            color: var(--gold);
+            font-size: 9.5px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .blog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0
+        }
+
+        .blog-item {
+            padding: 22px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: padding-left 0.2s;
+        }
+
+        .blog-item:last-child {
+            border: none
+        }
+
+        .blog-item:hover {
+            padding-left: 8px
+        }
+
+        .blog-item:hover .bi-title {
+            color: var(--gold)
+        }
+
+        .bi-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px
+        }
+
+        .bi-cat {
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .bi-date {
+            font-size: 11.5px;
+            color: var(--gray)
+        }
+
+        .bi-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--navy);
+            line-height: 1.3;
+            transition: color 0.2s
+        }
+
+
+        .contact-section {
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-section .s-title {
+            color: var(--white)
+        }
+
+        .contact-bg1 {
+            position: absolute;
+            left: -100px;
+            bottom: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(184, 150, 46, 0.06), transparent 70%);
+            pointer-events: none;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+        }
+
+        .contact-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 40px
+        }
+
+        .ci {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 22px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ci:last-child {
+            border: none
+        }
+
+        .ci-icon {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            background: rgba(184, 150, 46, 0.08);
+            border: 1px solid rgba(184, 150, 46, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .ci-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 4px
+        }
+
+        .ci-val {
+            font-size: 14.5px;
+            color: rgba(255, 255, 255, 0.7)
+        }
+
+        .wa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25D366;
+            color: var(--white);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 15px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 36px;
+            transition: all 0.3s;
+        }
+
+        .wa-btn:hover {
+            background: #22c35d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.25)
+        }
+
+        .expert-form {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(184, 150, 46, 0.1);
+            border-radius: 24px;
+            padding: 44px;
+        }
+
+        .expert-form h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+
+        .expert-form h3 em {
+            font-style: italic;
+            color: var(--gold2)
+        }
+
+        .expert-form>p {
+            font-size: 13.5px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 30px;
+            line-height: 1.6
+        }
+
+        .ef-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 13.5px;
+            font-family: 'Arial', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .ef-input:focus {
+            border-color: rgba(184, 150, 46, 0.4)
+        }
+
+        .ef-input::placeholder {
+            color: rgba(255, 255, 255, 0.2)
+        }
+
+        .ef-select {
+            color: rgba(255, 255, 255, 0.5)
+        }
+
+        .ef-select option {
+            background: var(--navy)
+        }
+
+        .ef-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--navy);
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .ef-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(184, 150, 46, 0.3)
+        }
+
+        footer {
+            background: #060c1a;
+            border-top: 1px solid rgba(184, 150, 46, 0.1);
+            padding: 70px 48px 40px;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr 1fr 1fr;
+            gap: 60px;
+            padding-bottom: 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 36px;
+        }
+
+        .f-brand .fb-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .f-brand-placeholder {
+            width: 40px;
+            height: 40px;
+            border: 1.5px dashed rgba(184, 150, 46, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(184, 150, 46, 0.03);
+        }
+
+        .f-brand-placeholder span {
+            font-size: 8px;
+            color: rgba(184, 150, 46, 0.4);
+            text-align: center;
+        }
+
+        .fb-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 2px;
+        }
+
+        .fb-name em {
+            font-style: normal;
+            color: var(--gold2)
+        }
+
+        .f-brand p {
+            font-size: 13.5px;
+            color: rgba(255, 255, 255, 0.32);
+            line-height: 1.8;
+            max-width: 280px;
+        }
+
+        /* SOCIAL ICONS */
+        .social-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.25s;
+        }
+
+        .social-btn:hover {
+            background: rgba(184, 150, 46, 0.12);
+            border-color: rgba(184, 150, 46, 0.3);
+            transform: translateY(-3px)
+        }
+
+        .trust-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 22px
+        }
+
+        .trust-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+
+        .f-col h5 {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .f-col a {
+            display: block;
+            color: rgba(255, 255, 255, 0.35);
+            text-decoration: none;
+            font-size: 13.5px;
+            margin-bottom: 12px;
+            transition: color 0.2s;
+        }
+
+        .f-col a:hover {
+            color: var(--gold2)
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-bottom p {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 12.5px
+        }
+
+        .footer-bottom a {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 12.5px
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1)
+        }
+
+        .reveal.up {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1)
+        }
+
+        .reveal-left.up {
+            opacity: 1;
+            transform: translateX(0)
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1)
+        }
+
+        .reveal-right.up {
+            opacity: 1;
+            transform: translateX(0)
+        }
+
+        /* YENİ ƏLAVƏ EDİLMİŞ SCROLL TO TOP DÜYMƏSİ ÜÇÜN CSS */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            color: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            text-decoration: none;
+            z-index: 9000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(184, 150, 46, 0.3);
+        }
+
+        .scroll-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(184, 150, 46, 0.4);
+            color: var(--navy);
+        }
+
+        @media(max-width:1100px) {
+            .nav-links {
+                display: none
+            }
+
+            .hamburger {
+                display: flex
+            }
+
+            .hero-content {
+                padding: 120px 32px 80px
+            }
+
+            .hero-stats-inner {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .hstat {
+                padding: 20px 24px
+            }
+
+            .section {
+                padding: 80px 32px
+            }
+
+            .services-head,
+            .lead-grid,
+            .about-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 50px
+            }
+
+            .cases-grid {
+                grid-template-columns: 1fr;
+                gap: 16px
+            }
+
+            .res-grid {
+                grid-template-columns: 1fr;
+                gap: 40px
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+                gap: 36px
+            }
+
+            .nav-cta {
+                display: none
+            }
+        }
+
+        @media(max-width:680px) {
+            .hero h1 {
+                font-size: 44px
+            }
+
+            .hero-sub {
+                font-size: 28px
+            }
+
+            .hero-stats-inner {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .srv-grid {
+                grid-template-columns: 1fr
+            }
+
+            .cert-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr
+            }
+
+            .nav-inner {
+                padding: 0 20px
+            }
+
+            .section {
+                padding: 60px 20px
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="cursor" id="cur"></div>
+    <div class="cursor-ring" id="curRing"></div>
+
+
+    <nav id="navbar">
+        <div class="nav-inner">
+
+            <a href="#" class="nav-logo-zone" style="text-decoration:none">
+                <div class="nav-logo-placeholder">
+                </div>
+                <div class="nav-brand-text">
+                    <span class="nav-brand-top">ASR Group</span>
+                    <span class="nav-brand-bottom">Development Consulting</span>
+                </div>
+            </a>
+
+
+            <ul class="nav-links">
+                <li>
+                    <a href="#about">Haqqımızda <span class="arr">▾</span></a>
+                    <div class="nav-drop">
+                        <a href="#about"><span class="di">🏛️</span>Şirkət Profili</a>
+                        <a href="#about"><span class="di">📅</span>Tariximiz 2009–2019</a>
+                        <a href="#about"><span class="di">🏅</span>Sertifikatlar</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#services">Xidmətlər <span class="arr">▾</span></a>
+                    <div class="nav-mega">
+                        <div class="mega-group">
+                            <h5>🌿 Qida Təhlükəsizliyi</h5>
+                            <a href="#">ISO 22000</a>
+                            <a href="#">HACCP</a>
+                            <a href="#">BRCGS</a>
+                            <a href="#">IFS Food</a>
+                            <a href="#">Texnoloji Audit</a>
+                        </div>
+                        <div class="mega-group">
+                            <h5>📊 Strateji İdarəetmə</h5>
+                            <a href="#">MQ Sistemləri</a>
+                            <a href="#">Strateji Planlaşdırma</a>
+                            <a href="#">HR Audit</a>
+                        </div>
+                        <div class="mega-group">
+                            <h5>⚖️ İqtisadi-Hüquqi</h5>
+                            <a href="#">Qanunvericilik (RIA)</a>
+                            <a href="#">Feasibility Analiz</a>
+                            <a href="#">Linqvistik Ekspertiza</a>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="#cases">Təcrübə <span class="arr">▾</span></a>
+                    <div class="nav-drop">
+                        <a href="#cases"><span class="di">🥩</span>Ət Sənayesi</a>
+                        <a href="#cases"><span class="di">🥛</span>Süd Məhsulları</a>
+                        <a href="#cases"><span class="di">🍽️</span>HoReCa</a>
+                        <a href="#cases"><span class="di">📦</span>Digər Sektorlar</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#gallery">Media <span class="arr">▾</span></a>
+                    <div class="nav-drop">
+                        <a href="#gallery"><span class="di">📸</span>Foto Qalereya</a>
+                        <a href="#gallery"><span class="di">🎥</span>Video İcmallar</a>
+                        <a href="#gallery"><span class="di">📰</span>Xəbərlər</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#resources">Bilik Mərkəzi <span class="arr">▾</span></a>
+                    <div class="nav-drop">
+                        <a href="#resources"><span class="di">✍️</span>Ekspert Bloq</a>
+                        <a href="#resources"><span class="di">📥</span>Pulsuz Resurslar</a>
+                    </div>
+                </li>
+                <li><a href="#contact">Əlaqə</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <a href="#lead" class="nav-cta">Pulsuz Diaqnostika →</a>
+                <button class="hamburger" id="hambBtn" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-overlay" id="mobOverlay">
+        <a href="#" class="mob-link" onclick="closeMob()"><span>Əsas</span><span class="num">01</span></a>
+        <div>
+            <a href="#about" class="mob-link" onclick="toggleSub('sub1',event)"><span>Haqqımızda</span><span
+                    class="num">02</span></a>
+            <div class="mob-sub" id="sub1">
+                <a href="#about" onclick="closeMob()">Şirkət Profili</a>
+                <a href="#about" onclick="closeMob()">Tariximiz</a>
+                <a href="#about" onclick="closeMob()">Sertifikatlar</a>
+            </div>
+        </div>
+        <div>
+            <a href="#services" class="mob-link" onclick="toggleSub('sub2',event)"><span>Xidmətlər</span><span
+                    class="num">03</span></a>
+            <div class="mob-sub" id="sub2">
+                <a href="#services" onclick="closeMob()">Qida Təhlükəsizliyi</a>
+                <a href="#services" onclick="closeMob()">Strateji İdarəetmə</a>
+                <a href="#services" onclick="closeMob()">Hüquqi Ekspertiza</a>
+                <a href="#services" onclick="closeMob()">Təlim</a>
+            </div>
+        </div>
+        <a href="#cases" class="mob-link" onclick="closeMob()"><span>Təcrübə</span><span class="num">04</span></a>
+        <a href="#gallery" class="mob-link" onclick="closeMob()"><span>Media</span><span class="num">05</span></a>
+        <a href="#resources" class="mob-link" onclick="closeMob()"><span>Bilik Mərkəzi</span><span
+                class="num">06</span></a>
+        <a href="#contact" class="mob-link" onclick="closeMob()"><span>Əlaqə</span><span class="num">07</span></a>
+        <a href="#lead" class="mob-cta" onclick="closeMob()">Pulsuz Diaqnostika →</a>
+    </div>
+
+
+    <section class="hero" id="home">
+        <div class="hero-shape1"></div>
+        <div class="hero-shape2"></div>
+        <div class="hero-shape3"></div>
+
+
+        <div class="hero-triangles" style="display:none" aria-hidden="true">
+            <div class="ht navy"></div>
+            <div class="ht gold"></div>
+            <div class="ht navy"></div>
+            <div class="ht gold"></div>
+            <div class="ht gold"></div>
+            <div class="ht navy"></div>
+            <div class="ht gold"></div>
+            <div class="ht navy"></div>
+            <div class="ht navy"></div>
+            <div class="ht gold"></div>
+            <div class="ht navy"></div>
+            <div class="ht gold"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <div class="hero-line"></div>
+                <span>2009-dan Fəaliyyətdə · Azərbaycan</span>
+            </div>
+            <h1>Strateji <em>Həllər,</em></h1>
+            <div class="hero-sub">Dayanıqlı İnkişaf.</div>
+            <p class="hero-desc">
+                AQTA-dan sertifikatlı 50+ ekspert komandamızla qida təhlükəsizliyi, strateji idarəetmə və hüquqi
+                ekspertiza
+                sahələrində beynəlxalq standartlara uyğun xidmətlər göstəririk.
+            </p>
+            <div class="hero-actions">
+                <a href="#lead" class="btn-gold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Pulsuz Diaqnostika
+                </a>
+                <a href="#services" class="btn-ghost">
+                    Xidmətlərə Bax
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-stats-bar">
+            <div class="hero-stats-inner">
+                <div class="hstat">
+                    <div class="hstat-num">50<span style="font-size:22px;color:var(--gold)">+</span></div>
+                    <div class="hstat-info">
+                        <p>Sertifikatlı</p><strong>Ekspert</strong>
+                    </div>
+                </div>
+                <div class="hstat">
+                    <div class="hstat-num">100<span style="font-size:22px;color:var(--gold)">+</span></div>
+                    <div class="hstat-info">
+                        <p>Tamamlanmış</p><strong>Layihə</strong>
+                    </div>
+                </div>
+                <div class="hstat">
+                    <div class="hstat-num">15</div>
+                    <div class="hstat-info">
+                        <p>İllik</p><strong>Təcrübə</strong>
+                    </div>
+                </div>
+                <div class="hstat">
+                    <div class="hstat-num">8</div>
+                    <div class="hstat-info">
+                        <p>Fəaliyyət</p><strong>Sektoru</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="ticker">
+        <div class="ticker-track">
+            <span class="ticker-item">🏅 ISO 22000 <span class="sep">·</span></span>
+            <span class="ticker-item">✅ HACCP Certified <span class="sep">·</span></span>
+            <span class="ticker-item">🎯 BRCGS Auditor <span class="sep">·</span></span>
+            <span class="ticker-item">🌿 IFS Food <span class="sep">·</span></span>
+            <span class="ticker-item">🏛️ AQTA Müstəqil Məsləhətçi <span class="sep">·</span></span>
+            <span class="ticker-item">⚖️ Qanunvericilik Ekspertizası (RIA) <span class="sep">·</span></span>
+            <span class="ticker-item">📊 Strateji İdarəetmə <span class="sep">·</span></span>
+            <span class="ticker-item">🎓 Sertifikat Təlimləri <span class="sep">·</span></span>
+            <span class="ticker-item">🏅 ISO 22000 <span class="sep">·</span></span>
+            <span class="ticker-item">✅ HACCP Certified <span class="sep">·</span></span>
+            <span class="ticker-item">🎯 BRCGS Auditor <span class="sep">·</span></span>
+            <span class="ticker-item">🌿 IFS Food <span class="sep">·</span></span>
+            <span class="ticker-item">🏛️ AQTA Müstəqil Məsləhətçi <span class="sep">·</span></span>
+            <span class="ticker-item">⚖️ Qanunvericilik Ekspertizası (RIA) <span class="sep">·</span></span>
+            <span class="ticker-item">📊 Strateji İdarəetmə <span class="sep">·</span></span>
+            <span class="ticker-item">🎓 Sertifikat Təlimləri <span class="sep">·</span></span>
+        </div>
+    </div>
+
+    <section class="section services-section" id="services">
+        <div class="section-inner">
+            <div class="services-head">
+                <div class="reveal-left">
+                    <div class="s-tag">Xidmətlər</div>
+                    <h2 class="s-title">Hərtərəfli<br><em>Konsaltinq</em><br>Həllər</h2>
+                </div>
+                <p class="s-desc reveal-right">AQTA-da təcrübəli mütəxəssislərimizin nəzarəti, dar ixtisaslı
+                    texnoloqların cəlbi
+                    ilə dünya standartlarında xidmət.</p>
+            </div>
+            <div class="srv-grid reveal">
+                <div class="srv-card">
+                    <div class="srv-arrow">↗</div>
+                    <span class="srv-num">01</span>
+                    <span class="srv-icon">🌿</span>
+                    <h3>Qida Təhlükəsizliyi</h3>
+                    <p>AQTA-da təcrübəli mütəxəssislərimizin bilavasitə nəzarəti altında beynəlxalq qida standartlarının
+                        tətbiqi.
+                        Dar ixtisaslı texnoloqların cəlbi ilə istehsal proseslərinin tam optimallaşdırılması.</p>
+                    <div class="srv-tags">
+                        <span class="srv-tag">ISO 22000</span>
+                        <span class="srv-tag">HACCP</span>
+                        <span class="srv-tag">BRCGS</span>
+                        <span class="srv-tag">IFS Food</span>
+                        <span class="srv-tag">Texnoloji Audit</span>
+                    </div>
+                </div>
+                <div class="srv-card">
+                    <div class="srv-arrow">↗</div>
+                    <span class="srv-num">02</span>
+                    <span class="srv-icon">📊</span>
+                    <h3>Strateji İdarəetmə</h3>
+                    <p>Müəssisə daxilində Monitorinq və Qiymətləndirmə (MQ) sistemlərinin qurulması, uzunmüddətli
+                        strateji
+                        planlaşdırma proseslərinin tətbiqi, insan resurları auditinin aparılması.</p>
+                    <div class="srv-tags">
+                        <span class="srv-tag">MQ Sistemləri</span>
+                        <span class="srv-tag">Strateji Plan</span>
+                        <span class="srv-tag">HR Audit</span>
+                    </div>
+                </div>
+                <div class="srv-card">
+                    <div class="srv-arrow">↗</div>
+                    <span class="srv-num">03</span>
+                    <span class="srv-icon">⚖️</span>
+                    <h3>İqtisadi-Hüquqi Ekspertiza</h3>
+                    <p>Qanun layihələrinin linqvistik və hüquqi ekspertizası, iqtisadi qiymətləndirmə (RIA), investisiya
+                        layihələrinin əsaslandırılması (Feasibility Study).</p>
+                    <div class="srv-tags">
+                        <span class="srv-tag">RIA</span>
+                        <span class="srv-tag">Feasibility</span>
+                        <span class="srv-tag">Hüquqi Ekspertiza</span>
+                    </div>
+                </div>
+                <div class="srv-card">
+                    <div class="srv-arrow">↗</div>
+                    <span class="srv-num">04</span>
+                    <span class="srv-icon">🎓</span>
+                    <h3>Təlim & İnkişaf</h3>
+                    <p>Baş auditorlar tərəfindən keçirilən beynəlxalq sertifikat kursları, müəssisə daxili seminarlar,
+                        sahə
+                        mütəxəssislərinin peşəkar inkişafı proqramları.</p>
+                    <div class="srv-tags">
+                        <span class="srv-tag">Sertifikat Kursları</span>
+                        <span class="srv-tag">Seminarlar</span>
+                        <span class="srv-tag">Kadr İnkişafı</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section lead-section" id="lead">
+        <div class="lead-bg-shape"></div>
+        <div class="section-inner">
+            <div class="lead-grid">
+                <div class="lead-left reveal-left">
+                    <div class="s-tag">Pulsuz Resurs</div>
+                    <h2 class="s-title" style="color:var(--navy)">Müəssisəniz<br>Beynəlxalq<br><em>Auditə
+                            Hazırdırmı?</em></h2>
+                    <p class="s-desc" style="margin-top:18px">AQTA və ISO standartlarına uyğunluq üçün hazırladığımız 15
+                        illik
+                        ekspertizanın məhsulu olan pulsuz resursları əldə edin.</p>
+                    <div class="lead-benefits">
+                        <div class="lead-benefit">
+                            <div class="lb-icon">📋</div>
+                            <div class="lb-text">
+                                <h4>10 Addımlı Beynəlxalq Audit Checklist</h4>
+                                <p>AQTA auditi üçün hazırlıq yoxlama siyahısı. Ekspertlərimiz tərəfindən hazırlanıb.</p>
+                            </div>
+                        </div>
+                        <div class="lead-benefit">
+                            <div class="lb-icon">📗</div>
+                            <div class="lb-text">
+                                <h4>Yeni Qida Təhlükəsizliyi Qanunu Bələdçisi</h4>
+                                <p>Azərbaycanda tətbiq olunan yeni qida qanunvericiliyinin izahı. PDF, 2024.</p>
+                            </div>
+                        </div>
+                        <div class="lead-benefit">
+                            <div class="lb-icon">📊</div>
+                            <div class="lb-text">
+                                <h4>Müəssisə Daxili Audit Şablonu</h4>
+                                <p>HACCP və ISO 22000 standartlarına uyğun hazır Excel audit forması.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lead-form-wrap reveal-right">
+                    <div class="s-tag" style="position:relative;z-index:1">Pulsuz Yüklə</div>
+                    <h3
+                        style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--white);margin-bottom:8px;position:relative;z-index:1">
+                        Çeklistinizi<br><em style="color:var(--gold2)">indi əldə edin</em></h3>
+                    <p
+                        style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:28px;position:relative;z-index:1;line-height:1.6">
+                        Adınızı və e-poçtunuzu daxil edin — resurslar dərhal göndərilsin.</p>
+                    <div style="position:relative;z-index:1">
+                        <label class="form-label">Ad Soyadınız</label>
+                        <input class="form-input" type="text" placeholder="Adınızı daxil edin">
+                        <label class="form-label">E-poçt Ünvanı</label>
+                        <input class="form-input" type="email" placeholder="email@sizinsirket.az">
+                        <label class="form-label">Şirkət Adı (ixtiyari)</label>
+                        <input class="form-input" type="text" placeholder="Şirkətin adı">
+                        <button class="form-submit">📥 Pulsuz Yüklə</button>
+                        <p class="form-note">🔒 Məlumatlarınız tam gizli saxlanılır · Spam yoxdur</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section cases-section" id="cases">
+        <div class="section-inner">
+            <div class="cases-head">
+                <div class="reveal-left">
+                    <div class="s-tag" style="color:var(--gold)">Təcrübəmiz</div>
+                    <h2 class="s-title" style="color:var(--white)">Real Layihələr,<br><em>Real Nəticələr</em></h2>
+                </div>
+                <p class="s-desc reveal-right">Hər layihədə "Problem → Həll → Nəticə" yanaşması ilə ölçülə bilən dəyər
+                    yaradırıq.</p>
+            </div>
+            <div class="cases-grid">
+                <div class="case-card reveal">
+                    <div class="case-sector-badge">🥩 Ət Emalı</div>
+                    <h4>ISO 22000 Sertifikatlaşdırılması</h4>
+                    <div class="case-step"><span class="step-label">Problem</span><span class="step-text">Xarici bazara
+                            çıxış üçün
+                            beynəlxalq sertifikat tələbi</span></div>
+                    <div class="case-step"><span class="step-label">Həll</span><span class="step-text">6 aylıq sistem
+                            qurma, kadr
+                            təlimi, proses optimallaşdırması</span></div>
+                    <div class="case-step"><span class="step-label">Nəticə</span><span class="step-text">Uğurlu audit,
+                            ilk cəhddə
+                            sertifikat əldə edildi</span></div>
+                    <div class="case-result">📈 İxracat həcmi 40% artdı</div>
+                </div>
+                <div class="case-card reveal">
+                    <div class="case-sector-badge">🥛 Süd Məhsulları</div>
+                    <h4>İstehsal İtkilərinin Azaldılması</h4>
+                    <div class="case-step"><span class="step-label">Problem</span><span class="step-text">İstehsal
+                            prosesindəki
+                            yüksək itki faizi (28%)</span></div>
+                    <div class="case-step"><span class="step-label">Həll</span><span class="step-text">HACCP tətbiqi,
+                            texnoloji
+                            audit, proses xəritəsi</span></div>
+                    <div class="case-step"><span class="step-label">Nəticə</span><span class="step-text">Proseslərin tam
+                            yenidən
+                            qurulması, standartlaşdırma</span></div>
+                    <div class="case-result">📉 İtkilər 20% azaldı</div>
+                </div>
+                <div class="case-card reveal">
+                    <div class="case-sector-badge">🍽️ HoReCa</div>
+                    <h4>Zəncirvari Qida Təhlükəsizliyi</h4>
+                    <div class="case-step"><span class="step-label">Problem</span><span class="step-text">12 filial üçün
+                            vahid
+                            standart sistemi yoxluğu</span></div>
+                    <div class="case-step"><span class="step-label">Həll</span><span class="step-text">Bütün filiallar
+                            üçün HACCP
+                            planı, kadr təlimi</span></div>
+                    <div class="case-step"><span class="step-label">Nəticə</span><span class="step-text">AQTA
+                            yoxlamalarında tam
+                            uyğunluq, 0 pozuntu</span></div>
+                    <div class="case-result">✅ 0 pozuntu · 12 filial</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section about-section" id="about">
+        <div class="section-inner">
+            <div class="about-grid">
+                <div class="reveal-left">
+                    <div class="s-tag">Haqqımızda</div>
+                    <h2 class="s-title" style="color:var(--navy)">2009-dan<br><em>Güvənilən</em><br>Tərəfdaş</h2>
+                    <p class="s-desc" style="margin-top:18px;color:var(--gray)">15 illik yolumuzda Azərbaycanın
+                        aqrar-ərzaq
+                        sektorunun inkişafına töhfə vermişik. 2019-cu ildə rebrendinq daha geniş sektoral əhatə yaratdı.
+                    </p>
+                    <div class="timeline">
+                        <div class="t-item">
+                            <div class="t-year">2009</div>
+                            <div class="t-title">Əsasın Qoyulması</div>
+                            <div class="t-text">Şirkətin qida təhlükəsizliyi konsaltinqi üzrə fəaliyyətə başlaması. İlk
+                                HACCP
+                                sertifikatlaşdırma layihəsi uğurla tamamlandı.</div>
+                        </div>
+                        <div class="t-item">
+                            <div class="t-year">2014</div>
+                            <div class="t-title">AQTA Əməkdaşlığı</div>
+                            <div class="t-text">AQTA ilə rəsmi tərəfdaşlıq. Qanunvericilik ekspertizası sahəsinin xidmət
+                                portfelinə
+                                əlavə edilməsi.</div>
+                        </div>
+                        <div class="t-item">
+                            <div class="t-year">2017</div>
+                            <div class="t-title">Komanda Genişlənməsi</div>
+                            <div class="t-text">50+ sertifikatlı ekspert. HoReCa sektoru və ixracat yönümlü layihələrə
+                                fokus gücləndi.
+                            </div>
+                        </div>
+                        <div class="t-item">
+                            <div class="t-year">2019</div>
+                            <div class="t-title">Rebrendinq — Yeni Epos</div>
+                            <div class="t-text">ASR Development Consulting Group. Strateji idarəetmə və HR audit
+                                xidmətlərinin geniş
+                                miqyasda təklif olunması.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal-right">
+                    <div class="s-tag">Sertifikatlar</div>
+                    <h3
+                        style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--navy);margin-bottom:12px">
+                        Beynəlxalq<br><em style="color:var(--gold)">Tanınma</em></h3>
+                    <p style="font-size:13.5px;color:var(--gray);line-height:1.7;margin-bottom:8px">Şirkətimizin və Baş
+                        Auditorlarımızın beynəlxalq sertifikatları, dövlət qurumlarından alınan rəsmi təşəkkürnamələr.
+                    </p>
+                    <div class="cert-grid">
+                        <div class="cert-card"><span class="cert-icon">🏅</span>
+                            <div class="cert-name">ISO 22000</div>
+                            <div class="cert-desc">Lead Auditor</div>
+                        </div>
+                        <div class="cert-card"><span class="cert-icon">✅</span>
+                            <div class="cert-name">HACCP</div>
+                            <div class="cert-desc">Sertifikat</div>
+                        </div>
+                        <div class="cert-card"><span class="cert-icon">🎯</span>
+                            <div class="cert-name">BRCGS</div>
+                            <div class="cert-desc">Auditor</div>
+                        </div>
+                        <div class="cert-card"><span class="cert-icon">🌿</span>
+                            <div class="cert-name">IFS Food</div>
+                            <div class="cert-desc">Sertifikat</div>
+                        </div>
+                        <div class="cert-card"><span class="cert-icon">🏛️</span>
+                            <div class="cert-name">AQTA</div>
+                            <div class="cert-desc">Müstəqil</div>
+                        </div>
+                        <div class="cert-card"><span class="cert-icon">🎖️</span>
+                            <div class="cert-name">Dövlət</div>
+                            <div class="cert-desc">Təşəkkürnamə</div>
+                        </div>
+                    </div>
+                    <div
+                        style="margin-top:24px;padding:20px;background:linear-gradient(135deg,rgba(184,150,46,0.06),rgba(184,150,46,0.02));border-radius:14px;border:1px solid rgba(184,150,46,0.12)">
+                        <p style="font-size:13px;color:var(--gray);line-height:1.7"><strong
+                                style="color:var(--navy)">Sertifikat
+                                Qalereyası →</strong> Bütün sertifikatların rəsmi skan versiyalarını görmək üçün
+                            ofisimizə gəlin və ya
+                            bizimlə əlaqə saxlayın.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section gallery-section" id="gallery">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="s-tag" style="color:var(--gold)">Daxili Mətbəx</div>
+                <h2 class="s-title" style="color:var(--white)">Bizim İşimiz,<br><em>Bizim Həyatımız</em></h2>
+            </div>
+            <div class="gtabs reveal" id="galleryTabs">
+                <button class="gtab active" onclick="switchTab('audit',this)">🏭 Real Audit</button>
+                <button class="gtab" onclick="switchTab('training',this)">🎓 Real Təlim</button>
+                <button class="gtab" onclick="switchTab('office',this)">💼 Real Ofis</button>
+            </div>
+            <div class="gallery-grid reveal" id="galleryGrid">
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section resources-section" id="resources">
+        <div class="section-inner">
+            <div class="reveal">
+                <div class="s-tag">Bilik Mərkəzi</div>
+                <h2 class="s-title" style="color:var(--navy)">Resurslar &<br><em>Ekspert Bloq</em></h2>
+            </div>
+            <div class="res-grid">
+                <div class="reveal-left">
+                    <h3
+                        style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--navy);margin-bottom:24px">
+                        📥 Pulsuz Sənədlər</h3>
+                    <div class="dl-list">
+                        <div class="dl-card">
+                            <div class="dl-ico">📗</div>
+                            <div class="dl-info">
+                                <h4>Yeni Qida Qanunu Bələdçisi</h4>
+                                <p>Azərbaycanda tətbiq olunan yeni qida qanunvericiliyinin sadə dildə izahı.</p>
+                                <span class="dl-badge">PDF · Pulsuz · 2024</span>
+                            </div>
+                        </div>
+                        <div class="dl-card">
+                            <div class="dl-ico">📊</div>
+                            <div class="dl-info">
+                                <h4>Müəssisə Daxili Audit Şablonu</h4>
+                                <p>HACCP və ISO 22000 standartlarına uyğun hazır audit forması.</p>
+                                <span class="dl-badge">Excel · Pulsuz</span>
+                            </div>
+                        </div>
+                        <div class="dl-card">
+                            <div class="dl-ico">📋</div>
+                            <div class="dl-info">
+                                <h4>10 Addımlı Audit Checklist</h4>
+                                <p>AQTA auditi üçün hazırlıq yoxlama siyahısı. 15 illik təcrübənin məhsulu.</p>
+                                <span class="dl-badge">PDF · Pulsuz</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal-right">
+                    <h3
+                        style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--navy);margin-bottom:24px">
+                        ✍️ Ekspert Bloq</h3>
+                    <div class="blog-list">
+                        <div class="blog-item">
+                            <div class="bi-meta"><span class="bi-cat">Qida Qanunu</span><span class="bi-date">15 Yanvar
+                                    2025</span>
+                            </div>
+                            <div class="bi-title">2025-ci ildə Azərbaycan Qida Qanunvericiliyindəki Əsas Yeniliklər
+                            </div>
+                        </div>
+                        <div class="blog-item">
+                            <div class="bi-meta"><span class="bi-cat">ISO 22000</span><span class="bi-date">3 Fevral
+                                    2025</span></div>
+                            <div class="bi-title">HACCP vs ISO 22000: Müəssisəniz üçün hansı standart doğrudur?</div>
+                        </div>
+                        <div class="blog-item">
+                            <div class="bi-meta"><span class="bi-cat">HoReCa</span><span class="bi-date">20 Fevral
+                                    2025</span></div>
+                            <div class="bi-title">Restoranlar üçün Qida Təhlükəsizliyi: AQTA yoxlamalarına hazırlıq
+                            </div>
+                        </div>
+                        <div class="blog-item">
+                            <div class="bi-meta"><span class="bi-cat">İxracat</span><span class="bi-date">5 Mart
+                                    2025</span></div>
+                            <div class="bi-title">Ət sənayesinin Avropa bazarlarına çıxışı üçün BRCGS tələbləri</div>
+                        </div>
+                    </div>
+                    <a href="#" class="btn-gold" style="margin-top:24px;display:inline-flex;font-size:11px">Bütün
+                        Məqalələr →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section contact-section" id="contact">
+        <div class="contact-bg1"></div>
+        <div class="section-inner">
+            <div class="contact-grid">
+                <div class="reveal-left">
+                    <div class="s-tag" style="color:var(--gold)">Əlaqə</div>
+                    <h2 class="s-title" style="color:var(--white)">Bizimlə<br><em>Əlaqə</em><br>Saxlayın</h2>
+                    <p
+                        style="font-size:15px;color:rgba(255,255,255,0.4);line-height:1.8;margin-top:18px;max-width:420px">
+                        Suallarınız üçün bilavasitə əlaqə saxlayın. Nümayəndəmiz 24 saat ərzində sizinlə əlaqə quracaq.
+                    </p>
+                    <div class="contact-items">
+                        <div class="ci">
+                            <div class="ci-icon">📍</div>
+                            <div>
+                                <div class="ci-label">Ünvan</div>
+                                <div class="ci-val">Bakı şəhəri, Neftçilər prospekti 153</div>
+                            </div>
+                        </div>
+                        <div class="ci">
+                            <div class="ci-icon">📞</div>
+                            <div>
+                                <div class="ci-label">Telefon</div>
+                                <div class="ci-val">+994 12 XXX XX XX</div>
+                            </div>
+                        </div>
+                        <div class="ci">
+                            <div class="ci-icon">✉️</div>
+                            <div>
+                                <div class="ci-label">E-poçt</div>
+                                <div class="ci-val">info@asrgroup.az</div>
+                            </div>
+                        </div>
+                        <div class="ci">
+                            <div class="ci-icon">🕒</div>
+                            <div>
+                                <div class="ci-label">İş Saatları</div>
+                                <div class="ci-val">B.e – C: 09:00 – 18:00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/994XXXXXXXXX" class="wa-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="trust-chips">
+                    <span class="trust-chip">ISO 22000</span>
+                    <span class="trust-chip">HACCP</span>
+                    <span class="trust-chip">BRCGS</span>
+                    <span class="trust-chip">AQTA</span>
+                    <span class="trust-chip">IFS</span>
+                </div>
+            </div>
+
+            <div class="f-col">
+                <h5>Xidmətlər</h5>
+                <a href="#">Qida Təhlükəsizliyi</a>
+                <a href="#">ISO 22000 & HACCP</a>
+                <a href="#">Strateji İdarəetmə</a>
+                <a href="#">Hüquqi Ekspertiza</a>
+                <a href="#">Feasibility</a>
+                <a href="#">Təlim</a>
+            </div>
+            <div class="f-col">
+                <h5>Şirkət</h5>
+                <a href="#">Haqqımızda</a>
+                <a href="#">Tariximiz</a>
+                <a href="#">Sertifikatlar</a>
+                <a href="#">Komanda</a>
+                <a href="#">Karyera</a>
+                <a href="#">Bloq</a>
+            </div>
+            <div class="f-col">
+                <h5>Resurslar</h5>
+                <a href="#">Audit Checklist</a>
+                <a href="#">Qida Qanunu Bələdçisi</a>
+                <a href="#">Audit Şablonu</a>
+                <a href="#">Case Studies</a>
+                <a href="#">FAQ</a>
+                <a href="#">Əlaqə</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 ASR Development Consulting Group. Bütün hüquqlar qorunur.</p>
+            <div style="display:flex;gap:20px">
+                <a href="#">Məxfilik Siyasəti</a>
+                <a href="#">İstifadə Şərtləri</a>
+            </div>
+            <p>Bakı, Azərbaycan 🇦🇿</p>
+        </div>
+        </div>
+        </footer>
+
+        <a href="#" id="scrollTopBtn" class="scroll-top" title="Yuxarı qalx">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 15l-6-6-6 6" />
+            </svg>
+        </a>
+
+        <script>
+            const cur = document.getElementById('cur');
+            const curRing = document.getElementById('curRing');
+            let mx = 0, my = 0, rx = 0, ry = 0;
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                cur.style.left = mx - 4 + 'px'; cur.style.top = my - 4 + 'px';
+            });
+            function animRing() {
+                rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+                curRing.style.left = rx - 18 + 'px'; curRing.style.top = ry - 18 + 'px';
+                requestAnimationFrame(animRing);
+            } animRing();
+            document.querySelectorAll('a,button,.srv-card,.case-card,.cert-card,.dl-card').forEach(el => {
+                el.addEventListener('mouseenter', () => { curRing.style.transform = 'scale(1.8)'; cur.style.transform = 'scale(0)' });
+                el.addEventListener('mouseleave', () => { curRing.style.transform = 'scale(1)'; cur.style.transform = 'scale(1)' });
+            });
+
+
+            // Navbar və Scroll Top Button funksiyaları
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('show');
+                } else {
+                    scrollTopBtn.classList.remove('show');
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+
+            const hambBtn = document.getElementById('hambBtn');
+            const mobOverlay = document.getElementById('mobOverlay');
+            hambBtn.addEventListener('click', () => {
+                hambBtn.classList.toggle('open');
+                mobOverlay.classList.toggle('open');
+                document.body.style.overflow = mobOverlay.classList.contains('open') ? 'hidden' : '';
+            });
+            function closeMob() {
+                hambBtn.classList.remove('open');
+                mobOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            function toggleSub(id, e) {
+                e.preventDefault();
+                const el = document.getElementById(id);
+                el.classList.toggle('open');
+            }
+
+            const galleryData = {
+                audit: [
+                    { icon: '🔬', label: 'Laboratoriya Yoxlaması' },
+                    { icon: '🏭', label: 'İstehsalat Xətti Auditi' },
+                    { icon: '📋', label: 'Sənəd Ekspertizası' },
+                    { icon: '🌡️', label: 'Temperatür Monitorinqi' },
+                    { icon: '⚗️', label: 'Nümunə Götürülməsi' },
+                    { icon: '📊', label: 'Hesabat Hazırlanması' },
+                ],
+                training: [
+                    { icon: '👨‍🏫', label: 'Seminar Proqramı' },
+                    { icon: '📝', label: 'Sertifikat İmtahanı' },
+                    { icon: '🎓', label: 'Diplom Verilişi' },
+                    { icon: '💡', label: 'Praktiki Məşğulə' },
+                    { icon: '👥', label: 'Qrup Tədris' },
+                    { icon: '🏆', label: 'Sertifikat Mərasimi' },
+                ],
+                office: [
+                    { icon: '💼', label: 'Komanda Müzakirəsi' },
+                    { icon: '📈', label: 'Hesabat Sessiyası' },
+                    { icon: '🤝', label: 'Müştəri Görüşü' },
+                    { icon: '💻', label: 'Onlayn Konsultasiya' },
+                    { icon: '📚', label: 'Bilik Bankı' },
+                    { icon: '☕', label: 'Brainstorm Sessiyası' },
+                ]
+            };
+            function switchTab(key, btn) {
+                document.querySelectorAll('.gtab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const grid = document.getElementById('galleryGrid');
+                grid.style.opacity = '0'; grid.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    grid.innerHTML = galleryData[key].map(item =>
+                        `<div class="gitem"><div class="gi-icon">${item.icon}</div><div class="gi-label">${item.label}</div></div>`
+                    ).join('');
+                    grid.style.transition = 'all 0.35s ease';
+                    grid.style.opacity = '1'; grid.style.transform = 'translateY(0)';
+                }, 200);
+            }
+            switchTab('audit', document.querySelector('.gtab.active'));
+
+
+            const revealEls = document.querySelectorAll('.reveal,.reveal-left,.reveal-right');
+            const revObs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) { e.target.classList.add('up'); revObs.unobserve(e.target) }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+            revealEls.forEach((el, i) => {
+                el.style.transitionDelay = (i % 4) * 0.08 + 's';
+                revObs.observe(el);
+            });
+
+            // YENİLƏNMİŞ RƏQƏM ANİMASİYASI
+            function animCount(el, end, duration) {
+                let start = 0;
+                const startTime = performance.now();
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                    el.textContent = Math.floor(easeProgress * end);
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        el.textContent = end;
+                    }
+                }
+                requestAnimationFrame(update);
+            }
+            const nums = document.querySelectorAll('.hstat-num');
+            let counted = false;
+            new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting && !counted) {
+                    counted = true;
+                    const targets = [50, 100, 15, 8];
+                    nums.forEach((el, i) => {
+                        const n = targets[i];
+                        el.innerHTML = `<span class="cn">0</span>${i < 2 ? '<span style="font-size:22px;color:var(--gold)">+</span>' : ''}`;
+                        animCount(el.querySelector('.cn'), n, 2000); // 2000ms (2 saniyə) smooth transition
+                    });
+                }
+            }, { threshold: 0.5 }).observe(document.querySelector('.hero-stats-bar'));
+        </script>
+</body>
+
+</html>
